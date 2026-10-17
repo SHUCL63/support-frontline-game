@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f8">
+<title>支援前線｜平板現場版</title>
+<style>
+:root{
+  --bg:#f4f6f8;--card:#fff;--text:#17181b;--muted:#6b7280;--border:#dfe3e8;
+  --accent:#1d4ed8;--accent-soft:#e8f0ff;--red:#d92d20;--red-soft:#fff0ee;
+  --blue:#2563eb;--blue-soft:#eef4ff;--green:#178344;--shadow:0 4px 18px rgba(0,0,0,.06)
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+button,select{font:inherit}
+button{touch-action:manipulation;cursor:pointer}
+.app{max-width:1180px;margin:0 auto;padding:18px 18px 44px}
+.top{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:end;margin-bottom:14px}
+h1{font-size:28px;line-height:1.15;margin:0 0 5px}
+.subtitle{color:var(--muted);font-size:14px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.modebar{display:flex;gap:8px;flex-wrap:wrap}
+.modebtn{min-height:52px;min-width:118px;padding:0 22px;border:1px solid var(--border);border-radius:14px;background:#fff;font-weight:800;font-size:17px}
+.modebtn.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.control-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.control-row label{font-size:14px;font-weight:800}
+select{min-height:50px;border:1px solid var(--border);background:#fff;border-radius:13px;padding:0 16px;font-size:17px}
+.ruleline{margin-top:12px;padding:11px 13px;background:#f8fafc;border:1px solid var(--border);border-radius:13px;font-size:14px;line-height:1.55;color:var(--muted)}
+.ruleline strong{color:var(--text)}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.team{min-width:0;border-radius:22px;padding:18px;background:var(--card);border:2px solid var(--border);box-shadow:var(--shadow)}
+.team.red{border-color:#f1b9b4}
+.team.blue{border-color:#b9cffb}
+.teamhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.teamname{font-size:26px;font-weight:900}
+.red .teamname{color:var(--red)} .blue .teamname{color:var(--blue)}
+.badge{font-size:14px;color:var(--muted);font-weight:700}
+.missions{min-height:260px;white-space:pre-line;font-size:21px;line-height:1.72;font-weight:800}
+.drawbtn{width:100%;min-height:72px;margin-top:14px;border:0;border-radius:18px;background:var(--accent);color:#fff;font-size:23px;font-weight:900;box-shadow:var(--shadow)}
+.drawbtn:active{transform:translateY(1px)}
+.scoregrid{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-top:14px}
+.scorebox{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:16px;text-align:center;box-shadow:var(--shadow)}
+.scoretitle{font-size:20px;font-weight:900}.scorebox.red .scoretitle,.scorebox.red .score{color:var(--red)}.scorebox.blue .scoretitle,.scorebox.blue .score{color:var(--blue)}
+.score{font-size:52px;line-height:1;font-weight:950;margin:8px 0 14px}
+.winbtn{width:100%;min-height:54px;border:0;border-radius:14px;color:#fff;font-size:17px;font-weight:900}
+.red .winbtn{background:var(--red)}.blue .winbtn{background:var(--blue)}
+.vs{font-size:20px;font-weight:950;color:var(--muted)}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.actionbtn{min-height:50px;border:1px solid var(--border);background:#fff;border-radius:14px;font-weight:800}
+.history{margin-top:14px}
+.historyhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.historytitle{font-size:18px;font-weight:900}
+.historyinfo{font-size:14px;color:var(--muted)}
+.historylist{display:grid;gap:8px}
+.hrow{display:grid;grid-template-columns:95px 1fr 90px;gap:10px;align-items:center;padding:11px 13px;border:1px solid var(--border);border-radius:13px;background:#fff;font-size:14px}
+.hwinner{font-weight:900}.hscore{text-align:right;font-weight:900}
+.empty{padding:14px;color:var(--muted);text-align:center;border:1px dashed var(--border);border-radius:13px}
+.status{margin-top:12px;font-size:14px;color:var(--muted);font-weight:700}
+.status strong{color:var(--text)}
+@media (max-width:760px){
+  .app{padding:12px 12px 32px}.top{grid-template-columns:1fr}.control-row{justify-content:flex-start}
+  .teams{grid-template-columns:1fr}.missions{min-height:180px;font-size:19px}
+  .scoregrid{grid-template-columns:1fr 1fr}.vs{display:none}.actions{grid-template-columns:1fr}
+}
+@media (orientation:landscape) and (min-width:800px){
+  .missions{min-height:300px;font-size:22px}.teamname{font-size:28px}.score{font-size:58px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="top panel">
+    <div>
+      <h1>支援前線｜紅藍隊同步出題器</h1>
+      <div class="subtitle">平板現場版｜建議橫向使用</div>
+      <div class="modebar" style="margin-top:14px">
+        <button class="modebtn active" data-mode="初級" type="button">初級</button>
+        <button class="modebtn" data-mode="中級" type="button">中級</button>
+        <button class="modebtn" data-mode="進階" type="button">進階</button>
+      </div>
+    </div>
+    <div class="control-row">
+      <label for="count">每隊題數</label>
+      <select id="count">
+        <option>1</option><option>2</option><option>3</option>
+        <option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+      </select>
+    </div>
+    <div class="ruleline" style="grid-column:1/-1">
+      <strong id="modeTitle">初級：100% 初級題庫</strong>
+      <span id="modeNote">｜完整水果、完整餐點與基本物件。</span>
+    </div>
+  </section>
+
+  <section class="teams">
+    <article class="team red">
+      <div class="teamhead"><div class="teamname">🔴 紅隊</div><div id="redBadge" class="badge">4 題</div></div>
+      <div id="redMission" class="missions" aria-live="polite">等待出題</div>
+    </article>
+    <article class="team blue">
+      <div class="teamhead"><div class="teamname">🔵 藍隊</div><div id="blueBadge" class="badge">4 題</div></div>
+      <div id="blueMission" class="missions" aria-live="polite">等待出題</div>
+    </article>
+  </section>
+
+  <button id="draw" class="drawbtn" type="button">⚔️ 同時出題｜初級｜每隊 4 題</button>
+
+  <section class="scoregrid">
+    <article class="scorebox red">
+      <div class="scoretitle">🔴 紅隊比分</div>
+      <div id="redScore" class="score">0</div>
+      <button id="redWin" class="winbtn" type="button">紅隊本回合勝</button>
+    </article>
+    <div class="vs">VS</div>
+    <article class="scorebox blue">
+      <div class="scoretitle">🔵 藍隊比分</div>
+      <div id="blueScore" class="score">0</div>
+      <button id="blueWin" class="winbtn" type="button">藍隊本回合勝</button>
+    </article>
+  </section>
+
+  <section class="actions">
+    <button id="drawRound" class="actionbtn" type="button">🤝 本回合平手</button>
+    <button id="undo" class="actionbtn" type="button">↩️ 撤銷上一回合</button>
+    <button id="reset" class="actionbtn" type="button">🗑️ 比分歸零</button>
+  </section>
+
+  <section class="history panel">
+    <div class="historyhead">
+      <div>
+        <div class="historytitle">每回合比分紀錄</div>
+        <div id="roundInfo" class="historyinfo">尚未記錄任何回合</div>
+      </div>
+    </div>
+    <div id="historyList" class="historylist"><div class="empty">記錄回合後會顯示在這裡。</div></div>
+    <div id="status" class="status">初級模式｜兩隊實體玩具不重複。</div>
+  </section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+function task(level,text,resources){return {level,text,resources:Array.isArray(resources)?resources:[resources]};}
+
+const wholeFruits=[
+ ['哈密瓜 1 顆','fruit-哈密瓜'],['山竹 1 顆','fruit-山竹'],['西瓜 1 顆','fruit-西瓜'],['楊桃 1 顆','fruit-楊桃'],
+ ['桃子 1 顆','fruit-桃子'],['橘子 1 顆','fruit-橘子'],['葡萄 1 串','fruit-葡萄'],['芒果 1 顆','fruit-芒果']
+];
+const halfFruits=[
+ ['哈密瓜半顆','fruit-哈密瓜'],['山竹半顆','fruit-山竹'],['西瓜半顆','fruit-西瓜'],['楊桃半顆','fruit-楊桃'],
+ ['桃子半顆','fruit-桃子'],['橘子半顆','fruit-橘子'],['葡萄半串','fruit-葡萄'],['芒果半顆','fruit-芒果']
+];
+
+const beginner=[
+ ...wholeFruits.map(([t,r])=>task('初級',t,r)),
+ task('初級','叉子','fork'),task('初級','刀子','knife'),task('初級','砧板','board'),
+ task('初級','漢堡 1 個','burger'),task('初級','杯子蛋糕 1 個','cupcake'),task('初級','冰淇淋 1 支','icecream'),
+ task('初級','一顆蛋糕','cake'),task('初級','一份披薩','pizza'),task('初級','一個熱狗堡','hotdog'),
+ task('初級','一份大薯','large-fries'),task('初級','一份小薯','small-fries'),task('初級','一杯可樂','cola')
+];
+
+const intermediate=[
+ ...halfFruits.map(([t,r])=>task('中級',t,r)),
+ task('中級','黃色刀子','knife'),task('中級','黃色叉子','fork'),
+ task('中級','半份蛋糕','cake'),task('中級','3/4 份蛋糕','cake'),task('中級','1/4 份蛋糕','cake'),
+ task('中級','半份披薩','pizza'),task('中級','半份熱狗堡','hotdog'),task('中級','粉紅色盤子','pink-plate')
+];
+
+const advanced=[];
+const fruitNames=['哈密瓜','山竹','西瓜','楊桃','桃子','橘子','葡萄','芒果'];
+fruitNames.forEach(name=>{
+ advanced.push(task('進階',name+'冰淇淋',['fruit-'+name,'icecream']));
+ advanced.push(task('進階',name+'水果杯子蛋糕',['fruit-'+name,'cupcake']));
+});
+const plateItems=[
+ ...wholeFruits,...halfFruits,
+ ['漢堡 1 個','burger'],['杯子蛋糕 1 個','cupcake'],['冰淇淋 1 支','icecream'],
+ ['一顆蛋糕','cake'],['半份蛋糕','cake'],['3/4 份蛋糕','cake'],['1/4 份蛋糕','cake'],
+ ['一份披薩','pizza'],['半份披薩','pizza'],['一個熱狗堡','hotdog'],['半份熱狗堡','hotdog'],
+ ['一份大薯','large-fries'],['一份小薯','small-fries'],['一杯可樂','cola']
+];
+plateItems.forEach(([t,r])=>advanced.push(task('進階',t+' 放在粉紅色餐盤',[r,'pink-plate'])));
+
+const pools={初級:beginner,中級:intermediate,進階:advanced};
+let mode='初級', redScore=0, blueScore=0, history=[], middleOffset=0, advancedOffset=0;
+
+function shuffle(a){
+ const x=a.slice();
+ for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}
+ return x;
+}
+function conflict(t,used){return t.resources.some(r=>used.has(r));}
+function reserve(t,used){t.resources.forEach(r=>used.add(r));}
+
+function targetCounts(total,localOffset){
+ if(mode==='初級') return {初級:total,中級:0,進階:0};
+ if(mode==='中級'){
+   const b=Math.floor(total/2), rem=total%2, c={初級:b,中級:b,進階:0};
+   if(rem)c[(localOffset%2===0)?'初級':'中級']++;
+   return c;
+ }
+ const b=Math.floor(total/3), rem=total%3, c={初級:b,中級:b,進階:b}, order=['初級','中級','進階'];
+ for(let i=0;i<rem;i++)c[order[(localOffset+i)%3]]++;
+ return c;
+}
+function pickLevel(level,n,used){
+ const got=[];
+ for(const t of shuffle(pools[level])){
+   if(got.length===n)break;
+   if(!conflict(t,used)){got.push(t);reserve(t,used);}
+ }
+ return got.length===n?got:null;
+}
+function buildTeam(counts,used){
+ const out=[];
+ for(const level of shuffle(['初級','中級','進階'])){
+   const n=counts[level]||0;if(!n)continue;
+   const p=pickLevel(level,n,used);if(!p)return null;out.push(...p);
+ }
+ return shuffle(out);
+}
+function generate(n){
+ for(let attempt=0;attempt<1000;attempt++){
+   const baseOffset=mode==='中級'?middleOffset:advancedOffset;
+   const rc=targetCounts(n,baseOffset);
+   const bc=targetCounts(n,baseOffset + (mode==='初級'?0:1));
+   const used=new Set();
+   const red=buildTeam(rc,used);if(!red)continue;
+   const blue=buildTeam(bc,used);if(!blue)continue;
+   if(mode==='中級')middleOffset=(middleOffset+1)%2;
+   if(mode==='進階')advancedOffset=(advancedOffset+1)%3;
+   return {red,blue,rc,bc};
+ }
+ return null;
+}
+function fmt(ts){return ts.map((t,i)=>(i+1)+'. 【'+t.level+'】'+t.text).join('\n');}
+function countText(c){return ['初級','中級','進階'].filter(k=>c[k]).map(k=>k+c[k]+'題').join('、');}
+
+function updateModeUI(){
+ const n=Math.max(1,Math.min(8,parseInt($('count').value,10)||4));
+ document.querySelectorAll('.modebtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+ $('redBadge').textContent=n+' 題';$('blueBadge').textContent=n+' 題';
+ $('draw').textContent='⚔️ 同時出題｜'+mode+'｜每隊 '+n+' 題';
+ const info={
+   初級:['初級：100% 初級題庫','｜完整水果、完整餐點與基本物件。'],
+   中級:['中級：初級＋中級等比例','｜兩個難度各約 50%，不能整除時輪流補題。'],
+   進階:['進階：初級＋中級＋進階等比例','｜三個難度各約 1/3，不能整除時輪流補題。']
+ };
+ $('modeTitle').textContent=info[mode][0];$('modeNote').textContent=info[mode][1];
+}
+
+function drawTasks(){
+ const n=Math.max(1,Math.min(8,parseInt($('count').value,10)||4));
+ const r=generate(n);
+ if(!r){
+   $('redMission').textContent='無法產生此組合';$('blueMission').textContent='請降低每隊題數';
+   $('status').textContent='目前條件無法在實體玩具零重複下完成出題。';return;
+ }
+ $('redMission').textContent=fmt(r.red);$('blueMission').textContent=fmt(r.blue);
+ $('status').innerHTML='<strong>本回合已出題</strong>｜紅隊：'+countText(r.rc)+'｜藍隊：'+countText(r.bc)+'｜兩隊實體玩具零重複。';
+}
+
+function renderScore(){
+ $('redScore').textContent=redScore;$('blueScore').textContent=blueScore;
+ if(!history.length){
+   $('roundInfo').textContent='尚未記錄任何回合';
+   $('historyList').innerHTML='<div class="empty">記錄回合後會顯示在這裡。</div>';return;
+ }
+ $('roundInfo').textContent='已完成 '+history.length+' 回合｜目前比分 紅 '+redScore+'：'+blueScore+' 藍';
+ $('historyList').innerHTML='';
+ history.slice().reverse().forEach((h,idx)=>{
+   const roundNo=history.length-idx;
+   const row=document.createElement('div');row.className='hrow';
+   const a=document.createElement('div');a.textContent='第 '+roundNo+' 回合';
+   const b=document.createElement('div');b.className='hwinner';b.textContent=h.label;
+   const c=document.createElement('div');c.className='hscore';c.textContent=h.rs+'：'+h.bs;
+   row.append(a,b,c);$('historyList').appendChild(row);
+ });
+}
+function record(result){
+ let label='🤝 平手';
+ if(result==='red'){redScore++;label='🔴 紅隊勝';}
+ if(result==='blue'){blueScore++;label='🔵 藍隊勝';}
+ history.push({result,label,rs:redScore,bs:blueScore});renderScore();
+}
+function undo(){
+ if(!history.length)return;
+ history.pop();redScore=0;blueScore=0;
+ history.forEach(h=>{if(h.result==='red')redScore++;if(h.result==='blue')blueScore++;h.rs=redScore;h.bs=blueScore;});
+ renderScore();
+}
+function reset(){
+ if(!confirm('確定要清除所有比分與回合紀錄嗎？'))return;
+ redScore=0;blueScore=0;history=[];renderScore();
+}
+
+document.querySelectorAll('.modebtn').forEach(btn=>btn.addEventListener('click',()=>{
+ mode=btn.dataset.mode;$('redMission').textContent='等待出題';$('blueMission').textContent='等待出題';updateModeUI();
+}));
+$('count').addEventListener('change',updateModeUI);
+$('draw').addEventListener('click',drawTasks);
+$('redWin').addEventListener('click',()=>record('red'));
+$('blueWin').addEventListener('click',()=>record('blue'));
+$('drawRound').addEventListener('click',()=>record('draw'));
+$('undo').addEventListener('click',undo);
+$('reset').addEventListener('click',reset);
+
+updateModeUI();renderScore();
+})();
+</script>
+</body>
+</html>
